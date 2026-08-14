@@ -1,0 +1,49 @@
+How to handle no relations:
+
+- what is a NOREL?
+    - a relation between H and T entities not in the given/known K relations?
+    - NOREL between H and T entities or between other types?
+    - is it always semantically?
+
+ - How to identify?
+    - post-processing:
+        - no-rels are distributed across K clusters, then check each cluster
+            identify NORELs and move to onw class NOREL
+    - TODO pre-processing binary classifier
+        - would it be possible to classify instances as NOREL and OTHERS and then process only the OTHERS further?
+        - could be done by learning a NOREL binary classifier
+    - linguistic acceptability
+        could one compute an LA confidence value
+
+-  HIERIX: question:
+    - when running complete medistant dev, it seems that for each cluster the majority of
+        instances are NORELs
+    - does this mean that all predicted clusters are basically NORELs, and that instances from other labels
+        are in shape similar to NOREL?
+    - if this is true, then a binary classification into NOREL/OTHERS in pre-processing step
+        is needed
+
+- binary NOREL classifier:
+    - supervised method: how many examples necessary?
+    - how to integrate with promptore information flow?
+
+- ideas for binary classifier using ModernBERT:
+    - https://www.kaggle.com/code/mexwell/bert-for-binary-classification
+    - https://huggingface.co/blog/davidberenstein1957/fine-tune-modernbert-on-synthetic-data
+
+- How much is the type of H and T characteristic for LABELS and NOREL
+    - how are NE types representated in the corpora
+    - and if so, how can I makue use of them during prompting
+    - generically, e.g., generic noun, adjective
+    - in-cluster different: types do not belong to "true" cluster
+
+- tested with
+    time python promptore.py --seed=0 --n-rel=42 --max-len=500     \
+    --files "/local/data/OpenIE/TACRED/data/json/dev.json"     \
+    --ds-name tacred --gn-debug --n-inst 10
+
+    time python promptore.py --seed=0 --n-rel=22 --max-len=500 \
+    --files "/local/data/OpenIE/med_distant19/MedDistant19_COLING/opennre_format/med_distant19_val.txt" \
+    --ds-name meddistant19 --gn-debug --n-inst 10
+
+

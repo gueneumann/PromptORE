@@ -14,17 +14,32 @@ Results on three general and specific domain datasets show that PromptORE consis
 
 ## Installation
 
-We have tested the installation with Python 3.8.16.
-
-Install the packages listed in `requirements.txt`:
+Dependencies are managed with [uv](https://docs.astral.sh/uv/). The project requires Python 3.10+.
 
 ```bash
-python3 -m pip install -r requirements.txt
+uv sync
+```
+
+This installs torch, transformers, accelerate, pandas, scikit-learn, yellowbrick and tqdm into a
+local `.venv`, pinned via `uv.lock`. Run any command below with `uv run ...` (or `source .venv/bin/activate`
+first).
+
+**GPU note:** `pyproject.toml` pins `torch==2.6.0` from the PyTorch `cu124` wheel index rather than the
+default PyPI build. This is deliberate: current default PyPI torch wheels (cu130+) dropped kernels for
+pre-Turing GPUs (compute capability < 7.5), which breaks on Pascal-generation cards (e.g. GTX 10xx). The
+cu124 build still ships Pascal kernels and remains forward-compatible with newer GPUs (Ampere/Ada/Hopper).
+If you only ever run on Turing-or-newer hardware, you can drop the `[tool.uv.sources]`/`[[tool.uv.index]]`
+override in `pyproject.toml` and use a plain `torch>=2.4.0` from PyPI instead.
+
+To use 4-bit/8-bit quantization for causal LMs (via `bitsandbytes`, Linux/NVIDIA only):
+
+```bash
+uv sync --extra quantization
 ```
 
 ## Running
 
-The source code is specifically designed to work with the FewRel dataset [[1]](#cite-1) [[2]](#cite-2). To have more details on FewRel, please refer to <https://github.com/thunlp/FewRel>.
+The source code is specifically designed to work with the FewRel dataset [[1]](#cite-1) [[2]](#cite-2). To have more details on FewRel, please refer to <https://github.com/thunlp/FewRel>. It also supports TACRED and MedDistant19 via `--ds-name`; see `config/*.json` for examples.
 
 ### Command Line Interface
 
@@ -37,39 +52,72 @@ PromptORE has the following parameters:
 * `--step-n-rel=[K]`. Only if `--auto-n-rel` is activated. Step to test clusters.
 * `--max-len=[LEN]`. Maximum number of tokens in the instances (reasonable values are `fewrel=150, fewrel_nyt=500, fewrel_pubmed=250`).
 * `files [FILE1] [FILE2] ...`. FewRel files to load for evaluation. All the files will be concatenated and the metrics aggregated.
+* `--model-name=[NAME]`. HF model name or local path. Defaults to `bert-base-uncased`. Any encoder-MLM
+  model (BERT, RoBERTa, ModernBERT, ...) or causal LM (OLMo, Qwen, GPT-2, ...) is supported.
+* `--model-type=[encoder_mlm|causal_lm]`. Override automatic model-family detection, if needed.
+* `--batch-size=[N]`. Embedding computation batch size. Defaults to 256; lower it substantially (e.g. 8-16)
+  for multi-billion-parameter causal LMs.
+* `--quantization=[4bit|8bit]`. Causal-LM only. Loads the model with `bitsandbytes` 4-bit/8-bit
+  quantization to reduce memory. Requires `uv sync --extra quantization`.
+* `--prompt-template=[TEMPLATE]`. Authorized parameters are `{sent} {e1} {e2}`, plus `{mask}` for
+  encoder-MLM models (required there, forbidden for causal-LM templates). Defaults to a
+  family-appropriate template if omitted (see `ore_models.DEFAULT_TEMPLATES`).
+* `--device=[DEVICE]`. Force a specific device (e.g. `cpu`, `cuda:0`). By default the model is loaded with
+  `accelerate`'s `device_map="auto"`, which automatically shards it across all visible GPUs (falling back
+  to CPU) — this is what avoids out-of-memory errors when loading large models on memory-constrained GPUs.
+
+### Supported model families
+
+Encoder-MLM (unchanged default; same [MASK]-position embedding strategy as the original paper):
+```bash
+uv run python promptore.py --config config/fewrel_config.json --n-inst 100
+uv run python promptore.py --config config/fewrel_config.json --model-name roberta-base --n-inst 100
+```
+
+Causal LM (last-token hidden state of a completion-style prompt):
+```bash
+uv run python promptore.py --config config/fewrel_config.json \
+    --model-name allenai/OLMo-1B-hf --model-type causal_lm --batch-size 16 --n-inst 100
+```
+
+Causal LM, quantized (see `config/qwen3_quantized_fewrel_config.json`):
+```bash
+uv sync --extra quantization
+uv run python promptore.py --config config/qwen3_quantized_fewrel_config.json --n-inst 100
+```
 
 ### Clustering knowing *k*
 
 For FewRel
 ```bash
-python3 promptore.py --seed=0 --n-rel=80 --max-len=150 --files "<path-to-fewrel>/train_wiki.json" "<path-to-fewrel>/val_wiki.json"
+uv run python promptore.py --seed=0 --n-rel=80 --max-len=150 --files "<path-to-fewrel>/train_wiki.json" "<path-to-fewrel>/val_wiki.json"
 ```
 
 For FewRel NYT
 ```bash
-python3 promptore.py --seed=0 --n-rel=25 --max-len=500 --files "<path-to-fewrel>/val_nyt.json"
+uv run python promptore.py --seed=0 --n-rel=25 --max-len=500 --files "<path-to-fewrel>/val_nyt.json"
 ```
 
 For FewRel PubMed
 ```bash
-python3 promptore.py --seed=0 --n-rel=10 --max-len=250 --files "<path-to-fewrel>/val_pubmed.json"
+uv run python promptore.py --seed=0 --n-rel=10 --max-len=250 --files "<path-to-fewrel>/val_pubmed.json"
 ```
 
 ### Estimating the number of clusters with the Elbow Rule
 
 For FewRel
 ```bash
-python3 promptore.py --seed=0 --auto-n-rel --min-n-rel=10 --max-n-rel=300 --step-n-rel=5 --max-len=150 --files "<path-to-fewrel>/train_wiki.json" "<path-to-fewrel>/val_wiki.json"
+uv run python promptore.py --seed=0 --auto-n-rel --min-n-rel=10 --max-n-rel=300 --step-n-rel=5 --max-len=150 --files "<path-to-fewrel>/train_wiki.json" "<path-to-fewrel>/val_wiki.json"
 ```
 
 For FewRel NYT
 ```bash
-python3 promptore.py --seed=0 --auto-n-rel --min-n-rel=2 --max-n-rel=100 --step-n-rel=2 --max-len=500 --files "<path-to-fewrel>/val_nyt.json"
+uv run python promptore.py --seed=0 --auto-n-rel --min-n-rel=2 --max-n-rel=100 --step-n-rel=2 --max-len=500 --files "<path-to-fewrel>/val_nyt.json"
 ```
 
 For FewRel PubMed
 ```bash
-python3 promptore.py --seed=0 --auto-n-rel --min-n-rel=2 --max-n-rel=100 --step-n-rel=2 --max-len=250 --files "<path-to-fewrel>/val_pubmed.json"
+uv run python promptore.py --seed=0 --auto-n-rel --min-n-rel=2 --max-n-rel=100 --step-n-rel=2 --max-len=250 --files "<path-to-fewrel>/val_pubmed.json"
 ```
 
 ## License

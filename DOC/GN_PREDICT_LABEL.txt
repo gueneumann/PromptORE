@@ -1,0 +1,30 @@
+how to predict class label from predicted label?
+    compute_cluster_label_name.py
+
+- choosing just token between H and T is not sufficient and often returns []
+    - if [] then get string between T and H. -> DONE
+    - maybe: classify relphrases as H-T nd T-H
+    - what are the remaining [] cases?
+
+- major problem so far: the generated clusters are highly ambiguous
+    - they usually contain instances from different "gold" clusters/labels
+    - so, it looks like one would need to split and reshuffle the instances
+    - assuming I can pre-classify NORELs, different distribution of labels
+        still an issue for clustering
+    - how can one use info about unbalanced label distribution?
+        is it possible to recognize this via label prediction?
+
+- compute distribution of labels per cluster
+    -> the heat map is already doing this
+
+- tested with
+    time python promptore.py --seed=0 --n-rel=41 --max-len=500     \
+    --files "/local/data/OpenIE/TACRED/data/json/dev.json"     \
+    --ds-name tacred --ignore-na --gn-debug --n-inst 10
+
+    time python promptore.py --seed=0 --n-rel=21 --max-len=500 \
+    --files "/local/data/OpenIE/med_distant19/MedDistant19_COLING/opennre_format/med_distant19_val.txt" \
+    --ds-name meddistant19 --ignore-na --gn-debug --n-inst 10
+
+
+
