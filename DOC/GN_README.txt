@@ -77,8 +77,7 @@ TODO improve software structure in preparation of rest-api and GUI:
         - for meddistant19:
             SAME
 
-TODO
-DONE
+TODO DONE
 - define model class:
     - following LAOIE
     - modernBert
@@ -101,6 +100,10 @@ DONE
         - allenai/OLMo-1B-hf --model-type causal_lm
         - NOT YET: Qwen/Qwen3-4B, quantized: 4bit
             - qwen3_quantized_fewrel_config.json
+            -> WORKS
+HIERIX
+-> results for clausal LLM are still low
+-> probably prompts to not work as expected
 
 
 - define FastAPI or Flask GUI using Claude Code
