@@ -1,0 +1,92 @@
+TODO Ok, the final [MASK] token's embedding actually represent the relation ?
+
+Yes, that's the core idea and the main purpose behind using the [MASK]
+token in that specific prompt structure: the final [MASK] token's contextualized embedding
+is intended to represent the relation between the two entities.
+
+Here's why and how it works:
+
+    Contextualization by BERT: BERT's self-attention mechanism processes the entire input sequence ({e1} [MASK] {e2}.)
+    bidirectionally. This means that when BERT computes the embedding for the [MASK] token, it takes into account:
+        The head entity (e1)
+        The tail entity (e2)
+        The words surrounding the [MASK] token (the rest of the template, like "is," "of," ".", etc.)
+        Crucially, the inherent relationship implied by the presence of e1 and e2 at their specific positions.
+
+    Analogy to Masked Language Modeling (MLM): In its pre-training, BERT's MLM objective teaches it to
+    predict the missing word (the [MASK] token) based on its context.
+    When you provide a prompt like "{e1} [MASK] {e2}.", you're effectively asking BERT:
+    "What word best describes the relationship between e1 and e2 in this context?"
+    Even though you're not using BertForMaskedLM to predict a word, the BertModel's internal representation
+    for that [MASK] token is a highly informative vector that captures the semantic "slot" or "gap" where
+    the relation should be.
+
+    Semantic Meaning of the Slot: By placing [MASK] between the entities, you're creating a
+    semantic "slot" that the model is forced to fill with information about how e1 and e2 are related.
+    The embedding of this [MASK] token thus becomes a dense vector representation of that relationship.
+
+    Application in Prompt-based Relation Extraction: This technique is a cornerstone of "prompt-based" or
+    "P-tuning" methods for relation extraction. Instead of training a classifier on the [CLS]
+    token embedding to classify the entire sentence's relation, you extract the [MASK] embedding.
+    This embedding can then be used for various downstream tasks:
+        Classification: Feed the [MASK] embedding into a simple linear classifier to predict the relation type.
+        Few-Shot Learning: In few-shot scenarios, you might compute these embeddings for
+        a few examples of each relation and then use metric learning or nearest-neighbor classification
+        to predict relations for new, unseen instances.
+        The idea is that relations of the same type will have similar [MASK] embeddings.
+
+In summary: While BertModel doesn't predict a token, its output embedding for the
+[MASK] token in this specific prompt structure is a very effective and widely used way to obtain a
+contextualized semantic representation of the relation between the two entities.
+
+TODO So, few shot learning here, could mean: Provide a small set of sentences and entities pairs which are
+    known to be true relations, compute the relation embedding for each and use this set of "true" relation
+    embedding as a reference set for relation embeddings of unseen sentences?
+
+That's an excellent summary! You've perfectly captured one of the primary ways this "PromptORE"
+(Prompt-based Relation Embedding) technique is applied in the context of few-shot learning for relation extraction.
+
+Let's break down why your understanding is spot-on:
+The Few-Shot Learning Workflow with PromptORE:
+
+    Reference Set Creation (Support Set):
+        "Provide a small set of sentences and entities pairs which are known to be true relations...": Exactly.
+        For each relation type (e.g., "per:employee_of", "org:founded_by", "loc:capital_of"), you gather a very
+        limited number of example sentences where that relation holds true for a given entity pair.
+        This small set is your support set.
+        "...compute the relation embedding for each...": You use the compute_promptore_relation_embedding
+        function (or a similar process) to generate the [MASK] token embedding for each example in your support set.
+        This gives you a set of high-dimensional vectors, where each vector represents a specific instance of a relation.
+        "...and use this set of "true" relation embedding as a reference set...":
+        This collection of embeddings for your known, few-shot examples forms your "reference set" or
+        "prototypes" for each relation type. For instance, you might average the embeddings for all examples of
+        "per:employee_of" to get a single "prototype" embedding for that relation, or keep them as individual instances.
+
+    Inference for Unseen Sentences (Query Set):
+        "...for relation embeddings of unseen sentences?": Now, when you have a new, unseen sentence
+        with an entity pair, and you want to predict the relation between them:
+            You apply the exact same prompting and embedding computation process to this new sentence.
+            You'll get a single [MASK] token embedding for this query instance.
+            You then compare this query embedding to your "reference set" embeddings.
+            Common comparison methods include:
+                Nearest Neighbors: Find the closest k embeddings in your reference set (using cosine
+                similarity or Euclidean distance). The majority class among these neighbors predicts the relation.
+                Prototypical Networks: If you computed average prototypes for each relation type,
+                you simply find which prototype embedding the query embedding is closest to.
+                Simple Classifier: You could train a very lightweight classifier (e.g., a logistic regression
+                or a small neural network) on your few-shot embeddings from the support set, and then use it to classify the query embedding.
+
+Why this is powerful for Few-Shot Learning:
+
+    Leverages Pre-trained Knowledge: BERT already understands complex language patterns.
+    The prompt helps guide BERT to activate the relevant semantic knowledge for relations.
+    Reduced Labeling Effort: You only need a handful of labeled examples per relation type,
+    significantly reducing the expensive human annotation required for traditional supervised learning.
+    Generalization: By learning rich, contextual embeddings, the model can generalize to unseen
+    entity pairs and sentence structures, as long as the underlying relation semantics are similar
+    to the few examples it has seen.
+    "Soft" Relation Representation: Instead of discrete labels, you get continuous, high-dimensional
+    vectors that capture the nuances of the relations, allowing for more flexible similarity comparisons.
+
+So, yes, your interpretation is absolutely correct. This is a common and effective strategy for
+few-shot relation extraction, enabling models to perform well even with very limited labeled data.

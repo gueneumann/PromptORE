@@ -1,0 +1,38 @@
+[project]
+name = "promptore"
+version = "0.2.0"
+description = "PromptORE: unsupervised relation extraction via prompt-based embeddings and clustering"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE.md" }
+dependencies = [
+    # Pinned to a cu124 build (see [tool.uv.sources]/[[tool.uv.index]] below):
+    # the default PyPI torch wheels (cu130+) dropped kernels for pre-Turing
+    # GPUs (compute capability < 7.5), which breaks on this dev machine's
+    # Pascal (cc 6.1) GTX 1080 Ti cards. cu124 still ships Pascal kernels and
+    # remains forward-compatible with newer (Ampere/Ada/Hopper) GPUs, so this
+    # pin should keep working when moving to newer-GPU machines. If you only
+    # ever run on Turing-or-newer hardware, this index override can be
+    # dropped in favor of a plain "torch>=2.4.0" from PyPI.
+    "torch==2.6.0",
+    "transformers>=4.51.0",
+    "accelerate>=0.34.0",
+    "pandas>=2.2.0",
+    "scikit-learn>=1.5.0",
+    "yellowbrick>=1.5",
+    "tqdm>=4.66.0",
+]
+
+[project.optional-dependencies]
+quantization = ["bitsandbytes>=0.43.1"]
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cu124" }]
+
+[[tool.uv.index]]
+name = "pytorch-cu124"
+url = "https://download.pytorch.org/whl/cu124"
+explicit = true
