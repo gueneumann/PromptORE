@@ -307,6 +307,7 @@ if __name__ == "__main__":
 
     # Step 3: parse again — CLI args override the JSON defaults
     args = parser.parse_args()
+    print(f"Used args:\t {args}")
 
     # Fail fast on an invalid model/quantization combination before loading
     # any dataset or downloading any model weights.

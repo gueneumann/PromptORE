@@ -91,6 +91,7 @@ TODO DONE
         - encoder-masked-language-models
         - clausal LM
     - using model-type specific prompt-templates
+    - flexible config file
     - multiple GPU
     - Models tested:
         - bert-base/large
@@ -98,26 +99,31 @@ TODO DONE
         - answerdotai/ModernBERT-large or -base
         - gpt2 also with quantization 8bit
         - allenai/OLMo-1B-hf --model-type causal_lm
-        - NOT YET: Qwen/Qwen3-4B, quantized: 4bit
+        - Qwen/Qwen3-4B, quantized: 4bit
             - qwen3_quantized_fewrel_config.json
-            -> WORKS
+            -> WORKS - about 22 minutes
 HIERIX
--> results for clausal LLM are still low
--> probably prompts to not work as expected
-
+-> run experiments with the different models to compare with beet-base-uncased results
+-> check whether new models are called proper
 
 - define FastAPI or Flask GUI using Claude Code
     https://www.contentful.com/blog/fastapi-vs-flask/
+    visualization of data statistics & clustering
 
-
-- define class get_relation_embeddings
+- define class save/get_relation_embeddings
     - from fresh calling model
     - save panda frame with embeddings
     - if frozen and if saved exists load it
 
 TODO and HIERIX:
-- how to predict class label from predicted label?
+ - how to predict class label from predicted label?
     DOC/GN_PREDICT_LABEL
+ - can one do some hierarchical clustering, e.g., shuffle elements from clusters based on similarity
+  between "linguistic patterns"
+  - check BERTopic for getting reasonable cluster labels
+
+TODO
+    - does few-shot learning makes sense if I do not know anything about relations?
 
 TODO inference:
     - compute or load saved clusters
