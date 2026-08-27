@@ -15,6 +15,6 @@
     "model_type": "causal_lm",
     "batch_size": 64,
     "quantization": null,
-    "prompt_template": "For the sentence: {sent} ,  relation({e1}, {e2}) has label ",
+    "prompt_template": "You are an relation extraction expert. For the following sentence which has two mentioned entity names, extract the relation label. Sentence: {sent} . Relation: relation({e1}, {e2}) has relation label ",
     "device": null
 }

@@ -13,8 +13,8 @@
     "n_inst": 0,
     "model_name": "Qwen/Qwen3-4B",
     "model_type": "causal_lm",
-    "batch_size": 8,
+    "batch_size": 64,
     "quantization": "4bit",
-    "prompt_template": "{sent} The relation between {e1} and {e2} is",
+    "prompt_template": "For the sentence: {sent} ,  relation({e1}, {e2}) has label ",
     "device": null
 }

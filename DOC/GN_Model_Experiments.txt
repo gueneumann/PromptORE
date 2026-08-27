@@ -1,0 +1,163 @@
+GN, August, 2026:
+
+Models tested:
+- bert-base/large
+- roberta-base/large
+- answerdotai/ModernBERT-large or -base
+- gpt2 also with quantization 8bit
+- allenai/OLMo-1B-hf --model-type causal_lm
+- Qwen/Qwen3-4B, quantized: 4bit
+    - qwen3_quantized_fewrel_config.json
+    -> WORKS - about 22 minutes
+
+Test on FewRel "/local/data/OpenIE/FewRel/data/val_nyt.json":
+
+allenai/OLMo-1B-hf --model-type causal_lm:
+-----------------------------------------
+
+- processing: about 10 min
+    batch-size = 64
+    batch-size 96 -> oom on XMAN
+
+ "prompt_template": "{sent} The relation between {e1} and {e2} is",
+Evaluate
+       B3: prec=0.0799 rec=0.0786 f1=0.0792
+V-measure: hom=0.0969 comp=0.1020 f1=0.0994
+      ARI: 0.0163
+
+"prompt_template": "For the sentence: {sent} ,  relation({e1}, {e2}) has label ",
+Evaluate
+       B3: prec=0.2073 rec=0.2026 f1=0.2049
+V-measure: hom=0.3447 comp=0.3539 f1=0.3492
+      ARI: 0.1427
+
+"prompt_template": "You are an relation extraction expert.
+                        For the following sentence which has two mentioned entity names,
+                        extract the relation label.
+                        Sentence: {sent} . Relation: relation({e1}, {e2}) has relation label ",
+Evaluate
+       B3: prec=0.2688 rec=0.2897 f1=0.2788
+V-measure: hom=0.4242 comp=0.4443 f1=0.4340
+      ARI: 0.2182
+
+
+Qwen/Qwen3-4B --model-type causal_lm:
+-----------------------------------------
+
+- processing: about 21 min
+    - batch-size 64
+
+"prompt_template": "{sent} The relation between {e1} and {e2} is",
+Evaluate
+       B3: prec=0.1826 rec=0.1754 f1=0.1789
+V-measure: hom=0.3018 comp=0.3137 f1=0.3076
+      ARI: 0.1119
+
+BEST "prompt_template": "For the sentence: {sent} ,  relation({e1}, {e2}) has label ",
+Evaluate
+       B3: prec=0.5658 rec=0.5578 f1=0.5617
+V-measure: hom=0.6984 comp=0.7106 f1=0.7045
+      ARI: 0.5011
+
+"prompt_template": "You are an relation extraction expert.
+                        For the following sentence which has two mentioned entity names,
+                        extract the relation label.
+                        Sentence: {sent} . Relation: relation({e1}, {e2}) has relation label ",
+Evaluate
+       B3: prec=0.5507 rec=0.5522 f1=0.5515
+V-measure: hom=0.6979 comp=0.7203 f1=0.7089
+      ARI: 0.4724
+
+"prompt_template": "You are an open relation extraction expert. For the sentence: {sent} ,  the relation between {e1} and {e2} has label ",
+B3: prec=0.5280 rec=0.5231 f1=0.5255
+V-measure: hom=0.6732 comp=0.6937 f1=0.6833
+      ARI: 0.4477
+
+"prompt_template": "For the sentence: {sent} ,  relation({e1}, {e2}) = rel ",
+Evaluate
+       B3: prec=0.3567 rec=0.3679 f1=0.3622
+V-measure: hom=0.5096 comp=0.5317 f1=0.5204
+      ARI: 0.2892
+
+
+ModernBert-base --model-type encoder_mlm
+----------------------------------------------
+- processing: about 2 min
+    - batch-size 265
+
+"prompt_template": "{sent} {e1} {mask} {e2}",
+Evaluate
+       B3: prec=0.6333 rec=0.6536 f1=0.6433
+V-measure: hom=0.7771 comp=0.7871 f1=0.7821
+      ARI: 0.6067
+
+"prompt_template": "You are an open relation extraction expert. For the sentence: {sent} ,  compute the relation ( {e1}, {mask}, {e2} ).",
+Evaluate
+       B3: prec=0.4601 rec=0.4640 f1=0.4620
+V-measure: hom=0.6325 comp=0.6472 f1=0.6398
+      ARI: 0.4015
+
+"prompt_template": "For the sentence: {sent} ,  extract the relation {e1} {mask} {e2}",
+Evaluate
+       B3: prec=0.4665 rec=0.4461 f1=0.4561
+V-measure: hom=0.6284 comp=0.6474 f1=0.6377
+      ARI: 0.3754
+
+"prompt_template": "{sent}: {e1} {mask} {e2} "
+Evaluate
+       B3: prec=0.6489 rec=0.6812 f1=0.6647
+V-measure: hom=0.7772 comp=0.7925 f1=0.7848
+      ARI: 0.6185
+
+        ModernBert-large: time 3 minutes
+        Evaluate
+               B3: prec=0.6378 rec=0.6931 f1=0.6643
+        V-measure: hom=0.7781 comp=0.8024 f1=0.7901
+              ARI: 0.6099
+
+"prompt_template": "{sent} has {e1} {mask} {e2} "
+Evaluate
+       B3: prec=0.6437 rec=0.6803 f1=0.6615
+V-measure: hom=0.7782 comp=0.7996 f1=0.7887
+      ARI: 0.6048
+
+BEST "prompt_template": "{sent} has relation {e1} {mask} {e2} ",
+Evaluate
+       B3: prec=0.6665 rec=0.7187 f1=0.6916
+V-measure: hom=0.7934 comp=0.8220 f1=0.8075
+      ARI: 0.6233
+
+      ModernBert-large: time 3 minutes
+      Evaluate
+                B3: prec=0.5620 rec=0.5943 f1=0.5777
+         V-measure: hom=0.7168 comp=0.7388 f1=0.7276
+               ARI: 0.5206
+
+"prompt_template": "{sent} is relation instance of {e1} {mask} {e2} ",
+Evaluate
+       B3: prec=0.6622 rec=0.7026 f1=0.6818
+V-measure: hom=0.7909 comp=0.8097 f1=0.8002
+      ARI: 0.6363
+
+"prompt_template": "{sent} is relation {e1} {mask} {e2} ",
+Evaluate
+       B3: prec=0.6307 rec=0.6709 f1=0.6501
+V-measure: hom=0.7718 comp=0.8007 f1=0.7860
+      ARI: 0.5674
+
+Roberta-base --model-type encoder_mlm
+----------------------------------------------
+- processing: about 1 min
+    - batch-size 265
+
+"prompt_template": "{sent} {e1} {mask} {e2}",
+Evaluate
+       B3: prec=0.6592 rec=0.6898 f1=0.6742
+V-measure: hom=0.7806 comp=0.8063 f1=0.7932
+      ARI: 0.6012
+
+"prompt_template": "{sent} has relation {e1} {mask} {e2} "
+Evaluate
+       B3: prec=0.6504 rec=0.6981 f1=0.6734
+V-measure: hom=0.7757 comp=0.8024 f1=0.7888
+      ARI: 0.6087

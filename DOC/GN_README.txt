@@ -88,34 +88,45 @@ TODO DONE
 -> with Claude Code DONE:
     - updated conda to uv
     - update ore_models.py to model adapters:
-        - encoder-masked-language-models
-        - clausal LM
+        - encoder_mlm
+        - causal_lm
     - using model-type specific prompt-templates
     - flexible config file
     - multiple GPU
     - Models tested:
-        - bert-base/large
-        - roberta-base/large
-        - answerdotai/ModernBERT-large or -base
-        - gpt2 also with quantization 8bit
-        - allenai/OLMo-1B-hf --model-type causal_lm
-        - Qwen/Qwen3-4B, quantized: 4bit
-            - qwen3_quantized_fewrel_config.json
-            -> WORKS - about 22 minutes
-HIERIX
--> run experiments with the different models to compare with beet-base-uncased results
--> check whether new models are called proper
+        - encoder_mlm:
+            - bert-base/large
+            - roberta-base/large
+            - answerdotai/ModernBERT-large or -base
+        - causal_lm:
+            - gpt2 also with quantization 8bit
+            - allenai/OLMo-1B-hf
+            - Qwen/Qwen3-4B, quantized: 4bit
 
-- define FastAPI or Flask GUI using Claude Code
+HIERIX:
+-> auf PERKS Server installieren
+-> adapt readme file
+-> rename project ?
+
+HIERIX:
+ReTACRED besorgen -> /local/data/OpenIE/Re-TACRED-master/Re-TACRED
+
+HIERIX
+-> see GN_Model_Experiments.txt
+
+-> check LLM2vec
+
+- TODO define FastAPI or Flask GUI using Claude Code
     https://www.contentful.com/blog/fastapi-vs-flask/
     visualization of data statistics & clustering
 
-- define class save/get_relation_embeddings
+- TODO ??? define class save/get_relation_embeddings
     - from fresh calling model
     - save panda frame with embeddings
     - if frozen and if saved exists load it
 
-TODO and HIERIX:
+TODO and HIERIX - Why should I compute labels? for knowledge graph construction
+ - re-clustering
  - how to predict class label from predicted label?
     DOC/GN_PREDICT_LABEL
  - can one do some hierarchical clustering, e.g., shuffle elements from clusters based on similarity
