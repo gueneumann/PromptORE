@@ -40,6 +40,20 @@ Evaluate
 V-measure: hom=0.4242 comp=0.4443 f1=0.4340
       ARI: 0.2182
 
+"prompt_template": "{sent} {e1}  {e2} has relation "
+Evaluate
+       B3: prec=0.2858 rec=0.2738 f1=0.2797
+V-measure: hom=0.4359 comp=0.4522 f1=0.4439
+      ARI: 0.2053
+
+
+"prompt_template": "{sent} is instance of {e1} {e2} relation",
+Evaluate
+       B3: prec=0.0742 rec=0.0804 f1=0.0772
+V-measure: hom=0.0953 comp=0.1002 f1=0.0977
+      ARI: 0.0188
+
+
 
 Qwen/Qwen3-4B --model-type causal_lm:
 -----------------------------------------
@@ -150,14 +164,50 @@ Roberta-base --model-type encoder_mlm
 - processing: about 1 min
     - batch-size 265
 
-"prompt_template": "{sent} {e1} {mask} {e2}",
+BEST "prompt_template": "{sent} {e1} {mask} {e2}",
 Evaluate
        B3: prec=0.6592 rec=0.6898 f1=0.6742
 V-measure: hom=0.7806 comp=0.8063 f1=0.7932
       ARI: 0.6012
 
-"prompt_template": "{sent} has relation {e1} {mask} {e2} "
+      Roberta-large: time 3 minutes
+      Evaluate
+           B3: prec=0.6683 rec=0.6840 f1=0.6761
+    V-measure: hom=0.7883 comp=0.8044 f1=0.7963
+          ARI: 0.6196
+
+SECOND "prompt_template": "{sent} has relation {e1} {mask} {e2} "
 Evaluate
        B3: prec=0.6504 rec=0.6981 f1=0.6734
 V-measure: hom=0.7757 comp=0.8024 f1=0.7888
       ARI: 0.6087
+
+ "prompt_template": "{sent} is relation instance of {e1} {mask} {e2} "
+ Evaluate
+       B3: prec=0.5845 rec=0.6101 f1=0.5970
+V-measure: hom=0.7333 comp=0.7545 f1=0.7437
+      ARI: 0.5347
+
+
+bert-base-uncased --model-type encoder_mlm
+----------------------------------------------
+- processing: about 1 min
+    - batch-size 265
+
+"prompt_template": "{sent} {e1} {mask} {e2}",
+Evaluate
+       B3: prec=0.6404 rec=0.6624 f1=0.6512
+V-measure: hom=0.7729 comp=0.7925 f1=0.7826
+      ARI: 0.5891
+
+SECOND "prompt_template": "{sent} has relation {e1} {mask} {e2} "
+Evaluate
+       B3: prec=0.6488 rec=0.6720 f1=0.6602
+V-measure: hom=0.7755 comp=0.7941 f1=0.7847
+      ARI: 0.6044
+
+BEST "prompt_template": "{sent} is relation instance of {e1} {mask} {e2} "
+Evaluate
+       B3: prec=0.6571 rec=0.6761 f1=0.6665
+V-measure: hom=0.7802 comp=0.8007 f1=0.7903
+      ARI: 0.6029

@@ -15,6 +15,6 @@
     "model_type": null,
     "batch_size": 256,
     "quantization": null,
-    "prompt_template": "{sent} {e1} {mask} {e2}",
+    "prompt_template": "{sent} is relation instance of {e1} {mask} {e2} ",
     "device": null
 }

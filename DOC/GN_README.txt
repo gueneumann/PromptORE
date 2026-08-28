@@ -106,7 +106,11 @@ TODO DONE
 HIERIX:
 -> auf PERKS Server installieren
 -> adapt readme file
--> rename project ?
+-> rename project ? -> siehe claude chat
+
+-> use claude to create a script to run experiments automatically for
+    different models, prompts, datasets
+    create sql and latex tables
 
 HIERIX:
 ReTACRED besorgen -> /local/data/OpenIE/Re-TACRED-master/Re-TACRED
@@ -114,16 +118,18 @@ ReTACRED besorgen -> /local/data/OpenIE/Re-TACRED-master/Re-TACRED
 HIERIX
 -> see GN_Model_Experiments.txt
 
--> check LLM2vec
+HIERIX:
+    - how to handle better cluster methods
+    - how to handle different (unbalanced) class distribution
+    - how to handle data with class distribution shift
+
 
 - TODO define FastAPI or Flask GUI using Claude Code
     https://www.contentful.com/blog/fastapi-vs-flask/
     visualization of data statistics & clustering
 
-- TODO ??? define class save/get_relation_embeddings
-    - from fresh calling model
-    - save panda frame with embeddings
-    - if frozen and if saved exists load it
+TODO
+    -> check LLM2vec -> https://huggingface.co/collections/McGill-NLP/llm2vec
 
 TODO and HIERIX - Why should I compute labels? for knowledge graph construction
  - re-clustering
@@ -133,29 +139,11 @@ TODO and HIERIX - Why should I compute labels? for knowledge graph construction
   between "linguistic patterns"
   - check BERTopic for getting reasonable cluster labels
 
-TODO
-    - does few-shot learning makes sense if I do not know anything about relations?
-
-TODO inference:
-    - compute or load saved clusters
-    - for new sentence(s):
-        do NER and identify similar clusters
-
-TODO How to improve performance?
-    - understand results also compared to others - WHAT DID I MEAN HERE?
-    - NOTE: others (ASCORE, SelfORE, RoCORE) do clustering with semi-supervised or pre-trained ORE
-        they split data in labeled/unlabeled (test) data; use only 2 classes instead of all
-TODO:
-    - How to handle no relations -> DOC/GN_NOREL.txt
-      - define binary classifier trained on dataset
-    - I think handling NOREL must be done before clustering OTHER, because
+TODO: How to handle no relations -> DOC/GN_NOREL.txt
+    - define binary classifier trained on dataset
+    - handling NOREL must be done before clustering OTHER, because
         otherwise noise of NOREL (cause by its sheer size) destroys clustering of OTHER
         and hence must be done first
-
-TODO:
-    - how to handle better cluster methods
-    - how to handle different (unbalanced) class distribution
-    - how to handle data with class distribution shift
 
 
 
