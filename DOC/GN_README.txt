@@ -123,6 +123,14 @@ HIERIX:
     - how to handle different (unbalanced) class distribution
     - how to handle data with class distribution shift
 
+TODO and HIERIX - Why should I compute labels? for knowledge graph construction
+ - re-clustering
+ - how to predict class label from predicted label?
+    DOC/GN_PREDICT_LABEL
+ - can one do some hierarchical clustering, e.g., shuffle elements from clusters based on similarity
+  between "linguistic patterns"
+  - check BERTopic for getting reasonable cluster labels
+
 
 - TODO define FastAPI or Flask GUI using Claude Code
     https://www.contentful.com/blog/fastapi-vs-flask/
@@ -131,13 +139,7 @@ HIERIX:
 TODO
     -> check LLM2vec -> https://huggingface.co/collections/McGill-NLP/llm2vec
 
-TODO and HIERIX - Why should I compute labels? for knowledge graph construction
- - re-clustering
- - how to predict class label from predicted label?
-    DOC/GN_PREDICT_LABEL
- - can one do some hierarchical clustering, e.g., shuffle elements from clusters based on similarity
-  between "linguistic patterns"
-  - check BERTopic for getting reasonable cluster labels
+
 
 TODO: How to handle no relations -> DOC/GN_NOREL.txt
     - define binary classifier trained on dataset
