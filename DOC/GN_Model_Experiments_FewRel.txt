@@ -10,7 +10,9 @@ Models tested:
     - qwen3_quantized_fewrel_config.json
     -> WORKS - about 22 minutes
 
-Test on FewRel "/local/data/OpenIE/FewRel/data/val_nyt.json":
+Test on FewRel
+
+    "/local/data/OpenIE/FewRel/data/val_nyt.json":
 
 allenai/OLMo-1B-hf --model-type causal_lm:
 -----------------------------------------

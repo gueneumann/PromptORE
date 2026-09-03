@@ -1,0 +1,23 @@
+GN, 02.09.2026:
+
+unterscheide lokale modell und remote modelle:
+
+- für remoter modelle:
+- flasks server definieren mit rest-api:
+    - gegebenes model laden
+    - batch size etc.
+    - prompt empfangen und embeddings leifern
+
+- ore_models code so anpassen, das entweder lokales model
+    oder remote model verwendet werden kann
+
+- remote server code in docker packen
+    dann auf http://serv-9210 hosten und grosse modelle auswählen
+
+Alternativ:
+    https://github.com/huggingface/text-embeddings-inference
+    unsure whether it can return embedding vectors
+
+
+Claude code prompt:
+

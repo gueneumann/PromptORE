@@ -77,9 +77,8 @@ TODO improve software structure in preparation of rest-api and GUI:
         - for meddistant19:
             SAME
 
-TODO DONE
+TODO DONE with Claude Code
 - define model class:
-    - following LAOIE
     - modernBert
         - https://huggingface.co/docs/transformers/model_doc/modernbert
         - https://www.answer.ai/posts/2025-02-10-modernbert-instruct.html
@@ -104,6 +103,7 @@ TODO DONE
             - Qwen/Qwen3-4B, quantized: 4bit
 
 HIERIX:
+-> Script foor running all models, data sets with params
 -> auf PERKS Server installieren
 -> adapt readme file
 -> rename project ? -> siehe claude chat
@@ -118,19 +118,11 @@ ReTACRED besorgen -> /local/data/OpenIE/Re-TACRED-master/Re-TACRED
 HIERIX
 -> see GN_Model_Experiments.txt
 
-HIERIX:
-    - how to handle better cluster methods
-    - how to handle different (unbalanced) class distribution
-    - how to handle data with class distribution shift
 
-TODO and HIERIX - Why should I compute labels? for knowledge graph construction
- - re-clustering
- - how to predict class label from predicted label?
-    DOC/GN_PREDICT_LABEL
- - can one do some hierarchical clustering, e.g., shuffle elements from clusters based on similarity
-  between "linguistic patterns"
-  - check BERTopic for getting reasonable cluster labels
-
+TODO and HIERIX - improve clustering
+- how to handle better cluster methods
+- how to handle different (unbalanced) class distribution
+- how to handle data with class distribution shift
 
 - TODO define FastAPI or Flask GUI using Claude Code
     https://www.contentful.com/blog/fastapi-vs-flask/
@@ -138,8 +130,6 @@ TODO and HIERIX - Why should I compute labels? for knowledge graph construction
 
 TODO
     -> check LLM2vec -> https://huggingface.co/collections/McGill-NLP/llm2vec
-
-
 
 TODO: How to handle no relations -> DOC/GN_NOREL.txt
     - define binary classifier trained on dataset

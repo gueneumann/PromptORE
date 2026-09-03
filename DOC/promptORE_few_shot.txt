@@ -46,8 +46,8 @@ TODO So, few shot learning here, could mean: Provide a small set of sentences an
 That's an excellent summary! You've perfectly captured one of the primary ways this "PromptORE"
 (Prompt-based Relation Embedding) technique is applied in the context of few-shot learning for relation extraction.
 
-GN: Ich denke, dass ist quatsch: promptore bekommt ja schon wahre Beispiele ausser, ich würde pro Klasse,
-einen prototypischen Vektor bauen
+TODO GN: Ich denke, dass ist quatsch: promptore bekommt ja schon wahre Beispiele ausser, ich würde pro Klasse,
+    einen prototypischen Vektor bauen -> aber siehe neue Papers
 
 Let's break down why your understanding is spot-on:
 The Few-Shot Learning Workflow with PromptORE:

@@ -1,0 +1,65 @@
+GN, August, 2026:
+
+Models tested:
+- bert-base/large
+- roberta-base/large
+- answerdotai/ModernBERT-large or -base
+- gpt2 also with quantization 8bit
+- allenai/OLMo-1B-hf --model-type causal_lm
+- Qwen/Qwen3-4B, quantized: 4bit
+    - qwen3_quantized_fewrel_config.json
+    -> WORKS - about 22 minutes
+
+Test on MedDistant19:
+
+    "/local/data/OpenIE/med_distant19/MedDistant19_COLING/opennre_format/med_distant19_val.txt"
+
+allenai/OLMo-1B-hf --model-type causal_lm:
+-----------------------------------------
+
+- processing: about 10 min
+    batch-size = 64
+    batch-size 96 ->  OOM XMAN
+
+
+Qwen/Qwen3-4B --model-type causal_lm:
+-----------------------------------------
+
+- processing: about 21 min
+    - batch-size 64
+
+
+ModernBert-base --model-type encoder_mlm
+----------------------------------------------
+- processing: about 2 min
+    - batch-size 265
+
+"prompt_template": "{sent} {e1} {mask} {e2}",
+Evaluate
+       B3: prec=0.6235 rec=0.2948 f1=0.4003
+V-measure: hom=0.6062 comp=0.4289 f1=0.5024
+      ARI: 0.1729
+
+"prompt_template": "{sent} has relation {e1} {mask} {e2} ",
+Evaluate
+       B3: prec=0.5367 rec=0.2329 f1=0.3248
+V-measure: hom=0.5289 comp=0.3715 f1=0.4364
+      ARI: 0.1180
+
+
+Roberta-base --model-type encoder_mlm
+----------------------------------------------
+- processing: about 1 min
+    - batch-size 265
+
+
+bert-base-uncased --model-type encoder_mlm
+----------------------------------------------
+- processing: about 1 min
+    - batch-size 265
+
+"prompt_template": "{sent} {e1} {mask} {e2}",
+Evaluate
+       B3: prec=0.6662 rec=0.3315 f1=0.4427
+V-measure: hom=0.6681 comp=0.4780 f1=0.5573
+      ARI: 0.2178

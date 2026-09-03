@@ -3,28 +3,7 @@ HIERIX:
 
 - when testing: --n-inst 10
 
-contingency_matrix(targets, predictions):
-- contingency
-{array-like, sparse}, shape=[n_classes_true, n_classes_pred]
 
-    Matrix C such that C_i,j is the number of samples in true class i and in predicted class j.
-    If eps is None, the dtype of this array will be integer unless set otherwise with the dtype argument.
-    If eps is given, the dtype will be float. If sparse=True will be a sparse CSR contingency.
+TODO B3, V-measure, adjusted_rand_score
 
--   https://scikit-learn.org/stable/modules/clustering.html#contingency-matrix
-
--   it is a cross-product over all combinations of target class i and predicted cluster j
--   each cells contains the number instances that are in a pair (i,j)
--   rows:    represent a distribution of instance across target classes -> used to compute recall per instance
--   columns: represent a distribution across predicted clusters -> used to compute precision per instance
-
--   visualization as heat map or sankey
-
--   TODO
-    - sort the relation groups in parse_data.py according to occurrence in targets list
-
-
-
-TODO V-measure
-
-TODO adjusted_rand_score
+-> see claude chats and local notes
