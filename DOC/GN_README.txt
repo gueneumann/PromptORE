@@ -104,6 +104,16 @@ TODO DONE with Claude Code
 
 HIERIX:
 -> Script foor running all models, data sets with params
+-> DONE
+TODO genau checken, ob all runs und auch Ergebnisse korrekt sind
+- define for each dataset own spec.josn file
+- run individually using promptore
+    - save results
+- run run_experiments.py
+    - compare results from individual runs with table results
+
+
+HIERIX
 -> auf PERKS Server installieren
 -> adapt readme file
 -> rename project ? -> siehe claude chat

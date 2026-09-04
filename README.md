@@ -86,6 +86,39 @@ uv sync --extra quantization
 uv run python promptore.py --config config/qwen3_quantized_fewrel_config.json --n-inst 100
 ```
 
+### Batch experiments and results table
+
+`experiments/run_experiments.py` runs a batch of PromptORE configurations (different datasets, models,
+prompts) defined in a single JSON spec file, and writes a results JSON alongside it. See
+`experiments/example_spec.json` for the format: each entry references a `dataset_config` (one of the
+`config/*.json` files, used for its defaults) plus any overrides (`model_name`, `model_type`, `batch_size`,
+`quantization`, `prompt_template`, `n_inst`, `seed`, ...). Consecutive runs sharing the same model are not
+reloaded, and a dataset is only parsed once per `dataset_config` even across many prompt variants, so
+grouping a prompt sweep for one model together in the spec is significantly faster.
+
+```bash
+uv run python experiments/run_experiments.py --spec experiments/example_spec.json --dry-run  # validate only
+uv run python experiments/run_experiments.py --spec experiments/example_spec.json
+```
+
+`experiments/render_results_table.py` reads that results JSON and renders a compact metrics table image
+(B³ precision/recall/F1, V-measure homogeneity/completeness/F1, ARI — grouped column headers, best value
+per column bolded, second-best underlined, one block per dataset), in the style commonly used for OpenRE
+papers:
+
+```bash
+uv run python experiments/render_results_table.py --results experiments/example_spec_results.json
+```
+
+When sweeping several prompts per model, give each run a short `prompt_id` (`"default"`, `"alt_1"`,
+`"alt_2"`, ...) in the spec — see `experiments/example_spec.json`. The table's "Run" column then shows
+just that short id (dataset and model already have their own columns), and a legend box below the table
+maps each id to its full template text. Reuse the same `prompt_id` with the *same* template text across
+encoder-MLM models (bert/roberta/ModernBERT templates are already `{mask}`-portable, so this works
+directly); causal-LM templates are structurally different, so give them their own id namespace (e.g.
+`causal_default`, `causal_alt_1`) to avoid one id mapping to two different templates in the legend. If
+`prompt_id` is omitted, it falls back to the run's `id` with the dataset suffix stripped.
+
 ### Clustering knowing *k*
 
 For FewRel

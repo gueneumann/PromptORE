@@ -107,9 +107,11 @@ Wang et al., 2022: MatchPrompt
 
 Zhao et al., 2023: ASCORE, Zhao et AL., 2021 RoCORE
 - same as above
+NOTE: (results froms ASCORE for 21 TACRED relations)
 - Results:
-    ASCORE: B3: 78.00, V: 83.1, ARI: 78.1
-    RoCORE: B3: 86.00, V: 88.8, ARI: 81,2
+    SelfORE: B3: 47.60  V: 61.5 ARI: 43.4
+    ASCORE:  B3: 78.00, V: 83.1 ARI: 78.1
+    RoCORE:  B3: 86.00, V: 88.8 ARI: 81,2
 
 Jamal et al., 2025: UOREX
 - same as above; compare: SelfCORE, RSN, RoCORE, KNORD

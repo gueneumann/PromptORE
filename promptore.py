@@ -74,12 +74,14 @@ def bcubed_loop(labels_true, labels_pred):
     print(f"BCubed F1:        {2*P_bcubed*R_bcubed/(P_bcubed+R_bcubed):.4f}")
 
 
-def bcubed(targets, predictions, beta: float = 1):
+def bcubed(targets, predictions, beta: float = 1, gn_debug: bool = False, ds_name: str = None):
     """B3 metric (see Baldwin1998)
     Args:
         targets (torch.Tensor): true labels
         predictions (torch.Tensor): predicted labels
         beta (float, optional): beta for f_score. Defaults to 1.
+        gn_debug (bool, optional): print/plot debug info. Defaults to False.
+        ds_name (str, optional): dataset name, used for debug plot titles.
     Returns:
         Tuple[float, float, float]: b3 f1, precision and recall
     """
@@ -89,7 +91,7 @@ def bcubed(targets, predictions, beta: float = 1):
     # Normlaized by number of all instances
     cont_mat_norm = cont_mat / cont_mat.sum()
 
-    if args.gn_debug:
+    if gn_debug:
         print(f"Cont matrix: {cont_mat.sum()}, \n{cont_mat}")
 
     precision = np.sum(cont_mat_norm * (cont_mat /
@@ -99,9 +101,9 @@ def bcubed(targets, predictions, beta: float = 1):
     f1_score = (1 + beta) * precision * recall / (beta * (precision + recall))
 
 
-    if args.gn_debug:
-        bcubed_sankey.bcubed_sankey(targets, predictions, args.ds_name)
-        bcubed_heatmap_large.bcubed_head_map(targets, predictions, args.ds_name)
+    if gn_debug:
+        bcubed_sankey.bcubed_sankey(targets, predictions, ds_name)
+        bcubed_heatmap_large.bcubed_head_map(targets, predictions, ds_name)
 
     return f1_score, precision, recall
 
@@ -121,24 +123,27 @@ def v_measure(targets, predictions):
     return v, homogeneity, completeness
 
 
-def evaluate_promptore(fewrel: pd.DataFrame, predicted_labels: torch.Tensor) -> tuple:
+def evaluate_promptore(fewrel: pd.DataFrame, predicted_labels: torch.Tensor,
+                       gn_debug: bool = False, ds_name: str = None) -> tuple:
     """Evaluate PromptORE
     Args:
         fewrel (pd.DataFrame): fewrel
         predicted_labels (torch.Tensor): predicted labels
+        gn_debug (bool, optional): print/plot debug info. Defaults to False.
+        ds_name (str, optional): dataset name, used for debug plot titles.
 
     Returns:
         tuple: scores
     """
     labels = torch.Tensor(fewrel['output_label'].tolist()).long()
 
-    if args.gn_debug:
+    if gn_debug:
         print(f"Labels: {len(labels)}, {labels}")
         print(f"Predic: {len(predicted_labels)}, {predicted_labels}")
 
     ari = adjusted_rand_score(labels, predicted_labels)
     v, v_hom, v_comp = v_measure(labels, predicted_labels)
-    b3, b3_prec, b3_rec = bcubed(labels, predicted_labels)
+    b3, b3_prec, b3_rec = bcubed(labels, predicted_labels, gn_debug=gn_debug, ds_name=ds_name)
 
     return b3, b3_prec, b3_rec, v, v_hom, v_comp, ari
 
@@ -204,7 +209,7 @@ def compute_promptore_relation_embedding(ore_model: 'ore_models.BaseOreModel',
     embeddings = torch.cat(embeddings, dim=0)
 
     complete_fewrel['embedding'] = list(embeddings)
-    print(complete_fewrel.head(3))
+    #print(complete_fewrel.head(3))
     return complete_fewrel
 
 
@@ -259,6 +264,80 @@ def estimate_n_rel(fewrel_relation_embeddings: pd.DataFrame, random_state: int, 
     return k_elbow
 
 
+def resolve_n_rel(relation_embeddings: pd.DataFrame, n_groups: int, args) -> int:
+    """Decide K for k-means clustering: estimated via the elbow rule, a fixed
+    manual value, or the number of gold relation groups, per `args`.
+
+    Args:
+        relation_embeddings (pd.DataFrame): relation embeddings
+        n_groups (int): number of gold relation groups in the (sub-sampled) dataset
+        args: namespace with auto_n_rel, seed, min_n_rel, max_n_rel, step_n_rel, n_rel
+
+    Returns:
+        int: number of clusters to use
+    """
+    print(f"How to get K for k-means clustering?")
+    print(f"\testimate: {args.auto_n_rel} or from data: {n_groups} or manual: {args.n_rel}")
+
+    if args.auto_n_rel:
+        print(f"\tEstimate K via Elbow Rule")
+        n_rel = estimate_n_rel(
+            relation_embeddings, args.seed, (args.min_n_rel, args.max_n_rel), args.step_n_rel)
+        print(f'\tEstimated n_rel={n_rel}')
+    else:
+        n_rel = args.n_rel if args.n_rel > 0 else n_groups
+        print(f"\tUse K -> {n_rel}")
+    return int(n_rel)
+
+
+def run_pipeline(ore_model: 'ore_models.BaseOreModel', fewrel: pd.DataFrame,
+                  n_groups: int, args) -> dict:
+    """Run the full PromptORE pipeline (embeddings -> clustering -> evaluation)
+    for one already-loaded model against one (already dataset-config-resolved)
+    dataframe. Shared by the CLI entry point and by run_experiments.py, so a
+    batch of experiments can reuse a loaded model across prompts without
+    duplicating this logic.
+
+    Args:
+        ore_model (ore_models.BaseOreModel): loaded model adapter
+        fewrel (pd.DataFrame): dataset (already subsetted if applicable)
+        n_groups (int): number of gold relation groups in `fewrel`
+        args: namespace with prompt_template, max_len, batch_size, seed,
+            gn_debug, ds_name, plus the resolve_n_rel fields above
+
+    Returns:
+        dict: JSON-serializable results (prompt_template, n_rel, b3/v/ari scores)
+    """
+    prompt_template = args.prompt_template or ore_models.DEFAULT_TEMPLATES[ore_model.model_type]
+    print(f"Compute relation embeddings using prompt template: {prompt_template}")
+    relation_embeddings = compute_promptore_relation_embedding(ore_model,
+        fewrel, template=prompt_template, max_len=args.max_len, batch_size=args.batch_size)
+
+    n_rel = resolve_n_rel(relation_embeddings, n_groups, args)
+
+    print(f"Do k-mean clustering with K={n_rel}")
+    predicted_labels = compute_kmeans_clustering(relation_embeddings, n_rel, args.seed)
+
+    if args.gn_debug:
+        print(f"Do labelling")
+        labeller.predict_cluster_labels(fewrel, predicted_labels)
+
+    print(f"Evaluate")
+    b3, b3_prec, b3_rec, v, v_hom, v_comp, ari = evaluate_promptore(
+        relation_embeddings, predicted_labels, gn_debug=args.gn_debug, ds_name=args.ds_name)
+    print(f'       B3: prec={b3_prec:.4f} rec={b3_rec:.4f} f1={b3:.4f}')
+    print(f'V-measure: hom={v_hom:.4f} comp={v_comp:.4f} f1={v:.4f}')
+    print(f'      ARI: {ari:.4f}')
+
+    return {
+        'prompt_template': prompt_template,
+        'n_rel': n_rel,
+        'b3_f1': float(b3), 'b3_prec': float(b3_prec), 'b3_rec': float(b3_rec),
+        'v_f1': float(v), 'v_hom': float(v_hom), 'v_comp': float(v_comp),
+        'ari': float(ari),
+    }
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='PromptORE')
     parser.add_argument('--config', help='Path to JSON config file', default='config.json')
@@ -302,12 +381,13 @@ if __name__ == "__main__":
         print(f"Load config: {args.config}")
         with open(args.config) as f:
             config = json.load(f)
-            print(config)
         parser.set_defaults(**config)
 
     # Step 3: parse again — CLI args override the JSON defaults
     args = parser.parse_args()
-    print(f"Used args:\t {args}")
+    print(f"Used args:")
+    for arg in vars(args):
+        print(f"Arg: {arg}, Value: {getattr(args, arg)}")
 
     # Fail fast on an invalid model/quantization combination before loading
     # any dataset or downloading any model weights.
@@ -317,7 +397,7 @@ if __name__ == "__main__":
                      f"'{args.model_name}' resolved to model_type='{resolved_model_type}'")
 
     # Read docred files
-    print(f"Read dataset rel files: {args.ds_name}\nfiles: {args.files}")
+    print(f"\nRead dataset rel files: {args.ds_name}\nfiles: {args.files}")
     files = args.files
     fewrel_files = [parse_data.parse_dataset(file, ds_name=args.ds_name, ignore_na=args.ignore_na) for file in files]
     fewrel = pd.concat(fewrel_files).reset_index(drop=True)
@@ -340,37 +420,4 @@ if __name__ == "__main__":
               f"input_device={ore_model.input_device}, "
               f"hf_device_map={getattr(ore_model.model, 'hf_device_map', None)}")
 
-        # Compute relation embeddings
-        prompt_template = args.prompt_template or ore_models.DEFAULT_TEMPLATES[ore_model.model_type]
-        print(f"Compute relation embeddings using prompt template: {prompt_template}")
-        relation_embeddings = compute_promptore_relation_embedding(ore_model,
-            fewrel, template=prompt_template, max_len=args.max_len, batch_size=args.batch_size)
-
-        # Compute clustering
-        # cluster-size:  known n-groups from gold data if not given manual
-        print(f"How to get K for k-means clustering?")
-        print(f"\testimate: {args.auto_n_rel} or from data: {n_groups} or manual: {args.n_rel}")
-
-        if args.auto_n_rel:
-            print(f"\tEstimate K via Elbow Rule")
-            n_rel = estimate_n_rel(
-                relation_embeddings, args.seed, (args.min_n_rel, args.max_n_rel), args.step_n_rel)
-            print(f'\tEstimated n_rel={n_rel}')
-        else:
-            n_rel = args.n_rel if args.n_rel > 0 else n_groups
-            print(f"\tUse K -> {n_rel}")
-
-        print(f"Do k-mean clustering with K={n_rel}")
-        predicted_labels = compute_kmeans_clustering(relation_embeddings, n_rel, args.seed)
-
-        if args.gn_debug:
-            print(f"Do labelling")
-            labeller.predict_cluster_labels(fewrel, predicted_labels)
-
-        # Evaluation
-        print(f"Evaluate")
-        b3, b3_prec, b3_rec, v, v_hom, v_comp, ari = evaluate_promptore(relation_embeddings,
-                                                                        predicted_labels)
-        print(f'       B3: prec={b3_prec:.4f} rec={b3_rec:.4f} f1={b3:.4f}')
-        print(f'V-measure: hom={v_hom:.4f} comp={v_comp:.4f} f1={v:.4f}')
-        print(f'      ARI: {ari:.4f}')
+        run_pipeline(ore_model, fewrel, n_groups, args)

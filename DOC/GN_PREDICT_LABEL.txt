@@ -1,14 +1,11 @@
 TODO  Why should I compute labels? for knowledge graph construction
 
-
 - how to predict class label from predicted label?
     compute_cluster_label_name.py
 
-- choosing just token between H and T is not sufficient and often returns []
-    - if for H and T == [] then get string between T and H. -> DONE
-    - maybe: classify relphrases as H-T and T-H
+- choosing just tokens between H and T has label source is not sufficient and often returns []
+    - if for (H, T) == [] then get string between (T, H) -> DONE
     - what are the remaining [] cases?
-    - TODO use BertTopic ?
 
 - major problem so far: the generated clusters are highly ambiguous
     - they usually contain instances from different "gold" clusters/labels
@@ -27,18 +24,23 @@ TODO  Why should I compute labels? for knowledge graph construction
 - compute distribution of labels per cluster
     -> the heat map is already doing this
 
-TODO adapt these to config files
-- tested with
-    time python promptore.py --seed=0 --n-rel=41 --max-len=500     \
-    --files "/local/data/OpenIE/TACRED/data/json/dev.json"     \
-    --ds-name tacred --ignore-na --gn-debug --n-inst 10
+TODO use BertTopic for labeling?
 
-    time python promptore.py --seed=0 --n-rel=21 --max-len=500 \
-    --files "/local/data/OpenIE/med_distant19/MedDistant19_COLING/opennre_format/med_distant19_val.txt" \
-    --ds-name meddistant19 --ignore-na --gn-debug --n-inst 10
+TODO What is the task of labeling ?
+- given item set D, partition it into k groups
+    - somehow it means we assign a lebel r to each item
+- often K is given, as for KNN
 
 
+- what does it mean if K is not given?
+  - depends on task and how input is structured, e.g., (H,T) entities are given for relation extraction
+  - but the general goal is mostly to identify groups of related items
+  - so K should be between 1 and |D| and "reasonable" large
+  - but Elbow rule can predict k (but very expensive)
+    - maybe provide min/max borders?
 
+what does NOREL mean here?
+- I guess only, relevant for evaluation
 
 
 
