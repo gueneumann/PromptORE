@@ -1,9 +1,0 @@
-HIERIX:
-- visualize results and cluster / gold group alignment
-
-- when testing: --n-inst 10
-
-
-TODO B3, V-measure, adjusted_rand_score
-
--> see claude chats and local notes
