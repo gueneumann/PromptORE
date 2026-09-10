@@ -130,7 +130,7 @@ class BaseOreModel(ABC):
             padding='max_length',
             truncation=True,
             return_attention_mask=True,
-            return_tensors='pt',
+            return_tensors='pt'
         )
         return encoded['input_ids'].view(-1), encoded['attention_mask'].view(-1)
 

@@ -30,13 +30,16 @@ def compute_promptore_relation_embedding(fewrel: pd.DataFrame,
     fewrel (pd.DataFrame): This is your input dataset, expected to be a Pandas DataFrame,
     likely containing information about entities and their relations (e.g., columns for tokens,
     head entity start/end, tail entity start/end, and the relation type r).
+
     template (str): This is a crucial part of "prompting." It defines a natural language sentence
     structure into which the head entity ({e1}), tail entity ({e2}), and the original sentence ({sent})
     will be inserted. The [MASK] token is strategically placed within this template.
     The default ' {e1} [MASK] {e2}.' suggests that the model will try to predict a token
     that represents the relation between e1 and e2.
+
     max_len (int): The maximum sequence length for BERT input. Sequences longer than
     this will be truncated, and shorter ones padded.
+
     device (str): The PyTorch device to use for computations, typically 'cuda' for GPU or 'cpu' for CPU.
     Returns (pd.DataFrame): The input fewrel DataFrame with an additional
     column for the computed relation embeddings.
@@ -58,8 +61,10 @@ Python
     tokenizer = BertTokenizer.from_pretrained(...): Loads the pre-trained BERT tokenizer.
     bert-base-uncased refers to a specific pre-trained BERT model (lowercase and no cased information).
     do_lower_case=True ensures all text is converted to lowercase during tokenization.
+
     mask_id = tokenizer.mask_token_id: Stores the numerical ID of the [MASK] token,
     which will be used later to identify its position.
+
     bert = BertModel.from_pretrained(...): Loads the pre-trained BertModel.
     This is the base BERT encoder. output_attentions=False means we're not interested in the attention weights for this task, saving some memory and computation.
 
@@ -102,22 +107,28 @@ Python
     text would look like: "The United States [MASK] Washington D.C."
     input_ids, attention_mask = tokenize(tokenizer, text, max_len): This line calls an external
     tokenize function (not defined in the provided snippet, but assumed to be a helper function).
+
     This function is responsible for:
         Tokenizing the text using the tokenizer.
         Adding special tokens like [CLS] and [SEP].
         Padding or truncating the sequence to max_len.
         Returning the input_ids (numerical IDs of tokens) and the attention_mask.
+
     rows.append(...): Each processed instance's data is stored in a dictionary and appended to rows.
         'input_tokens': The input_ids tensor.
         'input_attention_mask': The attention_mask tensor.
+
         'input_mask': This is critical. (input_ids == mask_id).nonzero().flatten().item()
         finds the index (position) of the [MASK] token within the input_ids sequence.
         This index will be used later to extract its embedding. .nonzero() gives indices where the condition is true,
         .flatten() makes it 1D, and .item() gets the scalar value (assuming only one mask token per input).
+
         'output_r': The original relation type string.
     complete_fewrel = pd.DataFrame(rows): Converts the list of dictionaries into a new Pandas DataFrame.
+
     complete_fewrel['output_label'] = pd.factorize(complete_fewrel['output_r'])[0]:
     Converts the string relation types (output_r) into numerical labels (output_label).
+
     This is useful if you later want to train a classifier on these embeddings.
 
 Embedding Prediction:

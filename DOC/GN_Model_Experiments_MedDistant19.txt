@@ -1,15 +1,5 @@
 GN, August, 2026:
 
-Models tested:
-- bert-base/large
-- roberta-base/large
-- answerdotai/ModernBERT-large or -base
-- gpt2 also with quantization 8bit
-- allenai/OLMo-1B-hf --model-type causal_lm
-- Qwen/Qwen3-4B, quantized: 4bit
-    - qwen3_quantized_fewrel_config.json
-    -> WORKS - about 22 minutes
-
 Test on MedDistant19:
 
     "/local/data/OpenIE/med_distant19/MedDistant19_COLING/opennre_format/med_distant19_val.txt"
@@ -69,3 +59,7 @@ Evaluate
        B3: prec=0.5919 rec=0.2453 f1=0.3469
 V-measure: hom=0.5605 comp=0.3921 f1=0.4614
       ARI: 0.1427
+
+
+dmis-lab/biobert-base-cased-v1.2
+--------------------------------

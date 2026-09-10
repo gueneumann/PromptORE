@@ -1,0 +1,166 @@
+{
+    "runs": [
+        {
+            "id": "bert-base_default_meddistant19",
+            "prompt_id": "default",
+            "dataset_config": "config/meddistant19_config.json",
+            "model_name": "bert-base-uncased",
+            "prompt_template": "{sent} {e1} {mask} {e2}",
+            "n_inst": 0,
+            "seed": 0
+        },
+        {
+            "id": "bert-base_alt_1_meddistant19",
+            "prompt_id": "alt_1",
+            "dataset_config": "config/meddistant19_config.json",
+            "model_name": "bert-base-uncased",
+            "prompt_template": "{sent} has relation {e1} {mask} {e2} ",
+            "n_inst": 0,
+            "seed": 0
+        },
+        {
+            "id": "bert-base_alt_2_meddistant19",
+            "prompt_id": "alt_2",
+            "dataset_config": "config/meddistant19_config.json",
+            "model_name": "bert-base-uncased",
+            "prompt_template": "{sent} is relation instance of {e1} {mask} {e2} ",
+            "n_inst": 0,
+            "seed": 0
+        },
+        {
+            "id": "bert-large_default_meddistant19",
+            "prompt_id": "default",
+            "dataset_config": "config/meddistant19_config.json",
+            "model_name": "bert-large-uncased",
+            "prompt_template": "{sent} {e1} {mask} {e2}",
+            "n_inst": 0,
+            "seed": 0
+        },
+        {
+            "id": "bert-large_alt_1_meddistant19",
+            "prompt_id": "alt_1",
+            "dataset_config": "config/meddistant19_config.json",
+            "model_name": "bert-large-uncased",
+            "prompt_template": "{sent} has relation {e1} {mask} {e2} ",
+            "n_inst": 0,
+            "seed": 0
+        },
+        {
+            "id": "bert-large_alt_2_meddistant19",
+            "prompt_id": "alt_2",
+            "dataset_config": "config/meddistant19_config.json",
+            "model_name": "bert-large-uncased",
+            "prompt_template": "{sent} is relation instance of {e1} {mask} {e2} ",
+            "n_inst": 0,
+            "seed": 0
+        },
+        {
+            "id": "roberta-base_default_meddistant19",
+            "prompt_id": "default",
+            "dataset_config": "config/meddistant19_config.json",
+            "model_name": "roberta-base",
+            "prompt_template": "{sent} {e1} {mask} {e2}",
+            "n_inst": 0,
+            "seed": 0
+        },
+        {
+            "id": "roberta-base_alt_1_meddistant19",
+            "prompt_id": "alt_1",
+            "dataset_config": "config/meddistant19_config.json",
+            "model_name": "roberta-base",
+            "prompt_template": "{sent} has relation {e1} {mask} {e2} ",
+            "n_inst": 0,
+            "seed": 0
+        },
+        {
+            "id": "roberta-base_alt_2_meddistant19",
+            "prompt_id": "alt_2",
+            "dataset_config": "config/meddistant19_config.json",
+            "model_name": "roberta-base",
+            "prompt_template": "{sent} is relation instance of {e1} {mask} {e2} ",
+            "n_inst": 0,
+            "seed": 0
+        },
+        {
+            "id": "roberta-large_default_meddistant19",
+            "prompt_id": "default",
+            "dataset_config": "config/meddistant19_config.json",
+            "model_name": "roberta-large",
+            "prompt_template": "{sent} {e1} {mask} {e2}",
+            "n_inst": 0,
+            "seed": 0
+        },
+        {
+            "id": "roberta-large_alt_1_meddistant19",
+            "prompt_id": "alt_1",
+            "dataset_config": "config/meddistant19_config.json",
+            "model_name": "roberta-large",
+            "prompt_template": "{sent} has relation {e1} {mask} {e2} ",
+            "n_inst": 0,
+            "seed": 0
+        },
+        {
+            "id": "roberta-large_alt_2_meddistant19",
+            "prompt_id": "alt_2",
+            "dataset_config": "config/meddistant19_config.json",
+            "model_name": "roberta-large",
+            "prompt_template": "{sent} is relation instance of {e1} {mask} {e2} ",
+            "n_inst": 0,
+            "seed": 0
+        },
+        {
+            "id": "ModernBert-base_default_meddistant19",
+            "prompt_id": "default",
+            "dataset_config": "config/meddistant19_config.json",
+            "model_name": "answerdotai/ModernBERT-base",
+            "prompt_template": "{sent} {e1} {mask} {e2}",
+            "n_inst": 0,
+            "seed": 0
+        },
+        {
+            "id": "ModernBert-base_alt_1_meddistant19",
+            "prompt_id": "alt_1",
+            "dataset_config": "config/meddistant19_config.json",
+             "model_name": "answerdotai/ModernBERT-base",
+            "prompt_template": "{sent} has relation {e1} {mask} {e2} ",
+            "n_inst": 0,
+            "seed": 0
+        },
+        {
+            "id": "ModernBert-base_alt_2_meddistant19",
+            "prompt_id": "alt_2",
+            "dataset_config": "config/meddistant19_config.json",
+             "model_name": "answerdotai/ModernBERT-base",
+            "prompt_template": "{sent} is relation instance of {e1} {mask} {e2} ",
+            "n_inst": 0,
+            "seed": 0
+        },
+        {
+            "id": "ModernBert-large_default_meddistant19",
+            "prompt_id": "default",
+            "dataset_config": "config/meddistant19_config.json",
+            "model_name": "answerdotai/ModernBERT-large",
+            "prompt_template": "{sent} {e1} {mask} {e2}",
+            "n_inst": 0,
+            "seed": 0
+        },
+        {
+            "id": "ModernBert-large_alt_1_meddistant19",
+            "prompt_id": "alt_1",
+            "dataset_config": "config/meddistant19_config.json",
+             "model_name": "answerdotai/ModernBERT-large",
+            "prompt_template": "{sent} has relation {e1} {mask} {e2} ",
+            "n_inst": 0,
+            "seed": 0
+        },
+        {
+            "id": "ModernBert-large_alt_2_meddistant19",
+            "prompt_id": "alt_2",
+            "dataset_config": "config/meddistant19_config.json",
+             "model_name": "answerdotai/ModernBERT-large",
+            "prompt_template": "{sent} is relation instance of {e1} {mask} {e2} ",
+            "n_inst": 0,
+            "seed": 0
+        }
+    ]
+}

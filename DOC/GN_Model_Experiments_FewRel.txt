@@ -10,9 +10,19 @@ Models tested:
     - qwen3_quantized_fewrel_config.json
     -> WORKS - about 22 minutes
 
+
+
 Test on FewRel
 
     "/local/data/OpenIE/FewRel/data/val_nyt.json":
+
+BATCH RUNS:
+
+for MaskedLM as mlm:
+python experiments/run_experiments.py --spec experiments/fewrel_mlm_spec.json --output experiments/fewrel_mlm_results.json
+python experiments/render_results_table.py --results experiments/fewrel_mlm_results.json --output experiments/fewrel_mlm.png
+
+MANUAL RUNS
 
 allenai/OLMo-1B-hf --model-type causal_lm:
 -----------------------------------------
@@ -23,7 +33,7 @@ allenai/OLMo-1B-hf --model-type causal_lm:
 
 python promptore.py --config config/fewrel_config.json \
 --model-name allenai/OLMo-1B-hf --model-type causal_lm --batch-size 64 \
---prompt-template "{sent} The relation between {e1} and {e2} is"
+--prompt-template "{sent} The relation between {e1} and {e2} is [MASK]"
 
 Evaluate
        B3: prec=0.0799 rec=0.0786 f1=0.0792
@@ -79,7 +89,7 @@ Qwen/Qwen3-4B --model-type causal_lm:
     - batch-size: 32 -> 43 min
 
 python promptore.py --config config/fewrel_config.json \
---model-name Qwen/Qwen3-4B --model-type causal_lm --batch-size 64  --quantization "4bit" \
+--model-name Qwen/Qwen3-4B --model-type causal_lm --batch-size 32  --quantization "4bit" \
 --prompt-template "{sent} The relation between {e1} and {e2} is"
 
 Evaluate
@@ -281,3 +291,15 @@ Evaluate
        B3: prec=0.6571 rec=0.6761 f1=0.6665
 V-measure: hom=0.7802 comp=0.8007 f1=0.7903
       ARI: 0.6029
+
+TODO Same setting as used in RoCORE and PromptORE (as a note): Using only 1600 instances:
+
+python promptore.py --config config/fewrel_config.json \
+--files "/local/data/OpenIE/FewRel/data/val_wiki.json" \
+--n-inst 100
+Evaluate
+       B3: prec=0.6902 rec=0.7155 f1=0.7027
+V-measure: hom=0.7847 comp=0.8167 f1=0.8003
+      ARI: 0.6084
+
+-> Better/Similar to RoCORE, MORE_RLL, SelfORE

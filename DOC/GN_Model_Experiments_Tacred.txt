@@ -1,14 +1,13 @@
 GN, August, 2026:
 
-Models tested:
-- bert-base/large
-- roberta-base/large
-- answerdotai/ModernBERT-large or -base
-- gpt2 also with quantization 8bit
-- allenai/OLMo-1B-hf --model-type causal_lm
-- Qwen/Qwen3-4B, quantized: 4bit
-    - qwen3_quantized_fewrel_config.json
-    -> WORKS - about 22 minutes
+
+BATCH RUNS:
+
+for MaskedLM as mlm:
+python experiments/run_experiments.py --spec experiments/tacred_mlm_spec.json --output experiments/tacred_mlm_results.json
+python experiments/render_results_table.py --results experiments/tacred_mlm_results.json --output experiments/tacred_mlm.png
+
+MANUAL RUNS
 
 Test on MedDistant19:
 

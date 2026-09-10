@@ -80,7 +80,6 @@ def parse_fewrel(path: str, expand: bool = False) -> pd.DataFrame:
                         break
                 if not expand:
                     break
-    print(data_tuples[0])
     return pd.DataFrame(data_tuples)
 
 ################################################################################
@@ -161,7 +160,6 @@ def parse_meddistant19(path: str, expand: bool = False, ignore_na: bool = False,
                     data_tuples.append(transform_meddistant19_object(instance))
             except json.JSONDecodeError as e:
                 print(f"Skipping line {line_num}: {e}")
-    print(data_tuples[0])
     return pd.DataFrame(data_tuples)
 
 ################################################################################
@@ -212,7 +210,6 @@ def parse_tacred(path: str, expand: bool = False, ignore_na: bool = False,
                 data_tuples.append(transform_tacred_object(instance))
         else:
             data_tuples.append(transform_tacred_object(instance))
-    print(data_tuples[0])
     return pd.DataFrame(data_tuples)
 
 
@@ -240,27 +237,25 @@ def parse_dataset(path: str, expand: bool = False,
 # Computing max_length and (relation, instances_idx) of given panda data frame
 ################################################################################
 
-def get_data_frame_statistcs (data_frame, gn_debug):
+def get_data_frame_statistcs(data_frame, gn_debug):
     # 1. Length of the maximum token list
     max_token_length = data_frame['tokens'].apply(len).max()
+
     if gn_debug:
         print(f"Max token list length: {max_token_length}")
         print(f"Total number of instances: {len(data_frame)}")
 
     # 2. List of all different relations with their instance indices
-    relation_groups = (
-        data_frame.groupby('r')
-        .apply(lambda g: g.index.tolist())
-        .reset_index()
-        .rename(columns={0: 'instance_indices'})
-    )
-
-    # Result: list of (relation, [indices]) tuples
-    relation_instance_list = list(zip(relation_groups['r'], relation_groups['instance_indices']))
+    grouped = data_frame.groupby('r').indices  # dict: relation -> array of positional indices
+    relation_instance_list = [
+        (relation, data_frame.index[idx_array].tolist())
+        for relation, idx_array in grouped.items()
+    ]
 
     if gn_debug:
         print(f"Number of different relations: {len(relation_instance_list)}")
-        for relation, indices in relation_instance_list:
+        for relation, indices in sorted(relation_instance_list,
+                                        key=lambda x: len(x[1]), reverse=True):
             print(f"Relation: {relation!r}, Instances: {len(indices)}")
 
     return max_token_length, len(relation_instance_list)

@@ -1,9 +1,10 @@
-conda create -n promptore python=3.8.16
-conda activate promptore
+using uv now
 
-python -m pip install -r requirements.txt
+current version in
+workspaceClaude/PromptORE
+Activate with: source .venv/bin/activate
 
-cd work/OpenIE/PromptORE
+
 
 TODO also test other prompts from paper and new templates:
 - see promptore.py:381 prompt_template
@@ -103,34 +104,37 @@ TODO DONE with Claude Code
             - Qwen/Qwen3-4B, quantized: 4bit
 
 HIERIX:
--> Script foor running all models, data sets with params
--> DONE
+-> Script for running all models, data sets with params -> DONE
 TODO genau checken, ob all runs und auch Ergebnisse korrekt sind
-- define for each dataset own spec.josn file
+- define for each dataset own spec.json file -> done for MLM models
 - run individually using promptore
     - save results
 - run run_experiments.py
     - compare results from individual runs with table results
+-> check with old run reports -> seems to ok
+-> running all experiments: PromptORE/run_all_datasets.sh*
 
+TODO do the same for CLM models
+-> compare used datasets with others
+-> results are still too bad and slow
+
+TODO improve prompting by Steering
+-> would this be a way to improve prompting, because currently much too arbitrary
+-> THINK: What can I cntribute ?
 
 HIERIX
--> auf PERKS Server installieren
+-> auf PERKS Server installieren -> using vLLM
 -> adapt readme file
 -> rename project ? -> siehe claude chat
 
--> use claude to create a script to run experiments automatically for
-    different models, prompts, datasets
-    create sql and latex tables
 
 HIERIX:
 ReTACRED besorgen -> /local/data/OpenIE/Re-TACRED-master/Re-TACRED
 
-HIERIX
--> see GN_Model_Experiments.txt
-
 
 TODO and HIERIX - improve clustering
 - how to handle better cluster methods
+-> can KNN handle large vectors? how sensitive is KNN when embedding size growth?
 - how to handle different (unbalanced) class distribution
 - how to handle data with class distribution shift
 
@@ -148,4 +152,16 @@ TODO: How to handle no relations -> DOC/GN_NOREL.txt
         and hence must be done first
 
 
+TODO Relation embeddings dimension:
 
+- allenai/OLMo-1B-hf -> 2048
+- Qwen/Qwen3-4B, 4bit/8bit -> 2560
+
+- answerdotai/ModernBERT-large -> 1024
+- answerdotai/ModernBERT-base -> 768
+
+- roberta-large -> 1024
+- roberta-base -> 768
+
+- bert-large-uncased -> 1024
+- bert-base-uncased -> 768

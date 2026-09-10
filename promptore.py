@@ -209,7 +209,7 @@ def compute_promptore_relation_embedding(ore_model: 'ore_models.BaseOreModel',
     embeddings = torch.cat(embeddings, dim=0)
 
     complete_fewrel['embedding'] = list(embeddings)
-    #print(complete_fewrel.head(3))
+    print(f"Size of relation embedding vector: {complete_fewrel['embedding'].iloc[0].shape}")
     return complete_fewrel
 
 

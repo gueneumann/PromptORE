@@ -68,30 +68,25 @@ DONE TODO NOTE: I am using character span for entities!
 
 3. do testing
 
-    time python promptore.py --seed=0 --n-rel=22 --max-len=500 \
-    --files "/local/data/OpenIE/med_distant19/MedDistant19_COLING/opennre_format/med_distant19_val.txt" \
-    --ds-name meddistant19
+# TODO testing without NA; note: reduces k from 22 to 21
+time python promptore.py --seed=0 --n-rel=21 --max-len=500 \
+--files "/local/data/OpenIE/med_distant19/MedDistant19_COLING/opennre_format/med_distant19_val.txt" \
+--ds-name meddistant19 --ignore-na
+Evaluate
+   B3: prec=0.6662 rec=0.3315 f1=0.4427
+V-measure: hom=0.6681 comp=0.4780 f1=0.5573
+  ARI: 0.2178
 
-    B3: prec=0.8496110721022327 rec=0.08600072612189964 f1=0.15619120934704991
-    V-measure: hom=0.29185042882134715 comp=0.04669775173386966 f1=0.0805129647790255
-    ARI=-0.0012832535337836937
+time python promptore.py --seed=0 --n-rel=21 --max-len=500 \
+--model-name bert-base-cased \
+--files "/local/data/OpenIE/med_distant19/MedDistant19_COLING/opennre_format/med_distant19_val.txt" \
+--ds-name meddistant19 --ignore-na
+Evaluate
+       B3: prec=0.6215 rec=0.2846 f1=0.3905
+V-measure: hom=0.6088 comp=0.4318 f1=0.5053
+      ARI: 0.1882
 
-    real	18m21,738s
-    user	20m0,483s
-    sys	0m8,892s
 
-    # TODO testing without NA; note: reduces k from 22 to 21
-    time python promptore.py --seed=0 --n-rel=21 --max-len=500 \
-    --files "/local/data/OpenIE/med_distant19/MedDistant19_COLING/opennre_format/med_distant19_val.txt" \
-    --ds-name meddistant19 --ignore-na
-
-    B3: prec=0.6693121479657362 rec=0.33673550522687934 f1=0.44805266149073564
-    V-measure: hom=0.6639628109652105 comp=0.4729673118496614 f1=0.5524221754154277
-    ARI=0.23069664398448278
-
-    real	1m44,421s
-    user	1m53,530s
-    sys	0m6,023s
 
     # TODO calling at MacBookPro: takes 26 minutes
     time python promptore.py --seed=0 --n-rel=21 --max-len=500 \
@@ -99,13 +94,36 @@ DONE TODO NOTE: I am using character span for entities!
     --ds-name meddistant19 --ignore-na
 
 
+BioBERT: baseline experiments of meddistant19 coling paper is using BioBERT:
+
+dmis-lab/biobert-base-cased-v1.2
+--------------------------------
+
+time python promptore.py --seed=0 --n-rel=21 --max-len=500 \
+    --model-name dmis-lab/biobert-base-cased-v1.2 \
+    --files "/local/data/OpenIE/med_distant19/MedDistant19_COLING/opennre_format/med_distant19_val.txt" \
+    --ds-name meddistant19 --ignore-na
+Evaluate
+       B3: prec=0.7251 rec=0.3278 f1=0.4515
+V-measure: hom=0.7036 comp=0.4881 f1=0.5764
+      ARI: 0.2101
+
+time python promptore.py --seed=0 --n-rel=21 --max-len=500 \
+    --model-name dmis-lab/biobert-v1.1 \
+    --files "/local/data/OpenIE/med_distant19/MedDistant19_COLING/opennre_format/med_distant19_val.txt" \
+    --ds-name meddistant19 --ignore-na
+Evaluate
+       B3: prec=0.6327 rec=0.2734 f1=0.3818
+V-measure: hom=0.6173 comp=0.4339 f1=0.5096
+      ARI: 0.1892
+
+
 
 TODO how to improve:
 
+MedDistant19 is build via alignment of Snomet-CT Knowledge Graph and pubmed 2019 results
+
 Unbalanced group size!
-
-how to use NA relations? remove as done for TACRED
-
 
 
 

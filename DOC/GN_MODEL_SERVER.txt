@@ -1,23 +1,52 @@
 GN, 02.09.2026:
 
-unterscheide lokale modell und remote modelle:
+Verwende nvtop zur Visualisierung der GPU Auslastung
 
-- für remoter modelle:
-- flasks server definieren mit rest-api:
-    - gegebenes model laden
-    - batch size etc.
-    - prompt empfangen und embeddings leifern
+
+unterscheide lokale Modelle  und remote Modellen:
+
+- für remoter Modelle:
+    vLLM.ai framework benutzen
 
 - ore_models code so anpassen, das entweder lokales model
     oder remote model verwendet werden kann
 
-- remote server code in docker packen
-    dann auf http://serv-9210 hosten und grosse modelle auswählen
+Verwendung vllm.ai docker file:
 
-Alternativ:
-    https://github.com/huggingface/text-embeddings-inference
-    unsure whether it can return embedding vectors
+MLT GPU Server
+
+ssh serv-9210.kl.dfki.de -l neumann
+
+P: MQj*******, DG4A4
 
 
-Claude code prompt:
+VLLM.AI Framework: OpenAI API
+
+Docker starten:
+
+cd /raid/data/neumann/vllm
+
+VLLM docker starten im Hintergrund:
+
+docker compose up -d
+
+Log anschauen:
+
+docker compose logs -f
+
+Hier Modelle gecached für Wiederverwendung, wenn docker neu gestart wird
+
+/raid/data/neumann
+
+docker beenden: docker compose down
+
+Editiere docker-compose.yaml
+
+Client call: für Batch, list of sentences
+curl http://serv-9210.kl.dfki.de:8080/v1/embeddings \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "Qwen/Qwen3-Embedding-4B",
+    "input": "What is the capital of France?"
+  }'
 
