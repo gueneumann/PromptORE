@@ -1,7 +1,7 @@
 [project]
-name = "promptore"
+name = "gnore"
 version = "0.2.0"
-description = "PromptORE: unsupervised relation extraction via prompt-based embeddings and clustering"
+description = "GNORE - Generic Unsuerpvised Relation Extraction"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE.md" }
